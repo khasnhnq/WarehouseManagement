@@ -1,0 +1,31 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build
+bin/
+obj/
+Debug/
+Release/
+
+# Logs
+*.log
+
+# Packages
+node_modules/
+
+# Temporary files
+*.tmp
+*.bak
+
+# Local configuration and secrets
+appsettings.Development.json
+appsettings.Production.json
+secrets.json
+
+# OS
+.DS_Store
+Thumbs.db

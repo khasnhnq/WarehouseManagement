@@ -1,0 +1,53 @@
+@baseUrl = https://localhost:7260
+@token = PASTE_TOKEN_HERE
+
+### Login (lấy token)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "admin",
+  "password": "Admin@12345"
+}
+
+### Dashboard (thay token sau khi login)
+GET {{baseUrl}}/api/dashboard/summary
+Authorization: Bearer {{token}}
+
+### Product pagination/search/sort
+GET {{baseUrl}}/api/products?pageNumber=1&pageSize=5&searchTerm=demo&sortBy=name&isDescending=false
+Authorization: Bearer {{token}}
+
+### Inventory list
+GET {{baseUrl}}/api/inventory
+Authorization: Bearer {{token}}
+
+### Import stock
+POST {{baseUrl}}/api/inventory/receipts
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "warehouseId": 1,
+  "quantity": 20,
+  "referenceNo": "PN-0001",
+  "notes": "Nhap hang demo"
+}
+
+### Export stock
+POST {{baseUrl}}/api/inventory/issues
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "warehouseId": 1,
+  "quantity": 3,
+  "referenceNo": "PX-0001",
+  "notes": "Xuat hang demo"
+}
+
+### Movement history
+GET {{baseUrl}}/api/inventory/movements?pageNumber=1&pageSize=10
+Authorization: Bearer {{token}}

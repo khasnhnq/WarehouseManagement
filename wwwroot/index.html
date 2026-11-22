@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102a43">
+  <title>KhoViet | Quản lý kho hàng</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div id="toastHost" class="toast-host" aria-live="polite"></div>
+
+  <section id="loginScreen" class="login-screen">
+    <div class="login-art">
+      <div class="brand brand-light"><span class="brand-mark">K</span><span>KhoViet</span></div>
+      <div class="login-art-copy">
+        <p class="eyebrow">WAREHOUSE MANAGEMENT</p>
+        <h1>Quản lý kho hàng<br><em>gọn gàng, hiệu quả.</em></h1>
+        <p>Theo dõi sản phẩm, nhập xuất và tồn kho trên một giao diện thống nhất.</p>
+      </div>
+      <div class="art-bottom"><span>WAREHOUSE OPERATIONS</span><span>•</span><span>INVENTORY CONTROL</span></div>
+    </div>
+    <div class="login-panel">
+      <div class="login-box">
+        <div class="brand brand-dark"><span class="brand-mark">K</span><span>KhoViet</span></div>
+        <p class="eyebrow">CHÀO MỪNG TRỞ LẠI</p>
+        <h2>Đăng nhập hệ thống</h2>
+        <p class="muted">Nhập thông tin tài khoản để tiếp tục.</p>
+        <form id="loginForm" class="form-stack">
+          <label>Tên đăng nhập hoặc email<input name="usernameOrEmail" autocomplete="username" required value="admin" placeholder="Ví dụ: admin"></label>
+          <label>Mật khẩu<input name="password" type="password" autocomplete="current-password" required value="Admin@12345" placeholder="Nhập mật khẩu"></label>
+          <button class="btn btn-primary btn-wide" type="submit">Đăng nhập <span>→</span></button>
+          <p id="loginError" class="form-error" role="alert"></p>
+        </form>
+        <div class="demo-hint"><strong>Tài khoản demo</strong><span>admin / Admin@12345</span><small>Chỉ sử dụng cho môi trường trình diễn tại lớp.</small></div>
+      </div>
+      <div class="login-footer">© 2026 KhoViet · Warehouse Management API</div>
+    </div>
+  </section>
+
+  <div id="appShell" class="app-shell hidden">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand"><span class="brand-mark">K</span><span>KhoViet</span><small>WAREHOUSE ERP</small></div>
+      <div class="nav-caption">TỔNG QUAN</div>
+      <button class="nav-link active" data-page="dashboard"><span class="nav-icon">▦</span> Tổng quan</button>
+      <div class="nav-caption">QUẢN LÝ KHO</div>
+      <button class="nav-link" data-page="products"><span class="nav-icon">▤</span> Sản phẩm</button>
+      <button class="nav-link" data-page="categories"><span class="nav-icon">▧</span> Danh mục</button>
+      <button class="nav-link" data-page="suppliers"><span class="nav-icon">♧</span> Nhà cung cấp</button>
+      <button class="nav-link" data-page="warehouses"><span class="nav-icon">⌂</span> Kho hàng</button>
+      <div class="nav-caption">KHO VẬN</div>
+      <button class="nav-link" data-page="inventory"><span class="nav-icon">▣</span> Tồn kho & nhập xuất</button>
+      <button class="nav-link" data-page="movements"><span class="nav-icon">↔</span> Lịch sử giao dịch</button>
+      <div class="sidebar-bottom">
+        <div class="api-status"><span class="status-dot"></span><span>API đang kết nối</span></div>
+        <a class="swagger-link" href="/swagger" target="_blank" rel="noreferrer">Mở Swagger API ↗</a>
+        <div class="user-mini"><div class="avatar" id="userAvatar">A</div><div class="user-mini-info"><strong id="userName">Admin</strong><span id="userRole">Administrator</span></div><button id="logoutBtn" class="icon-btn" title="Đăng xuất">↪</button></div>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <button class="icon-btn mobile-menu" id="menuBtn" aria-label="Mở menu">☰</button>
+        <div><div class="breadcrumb">KhoViet <span>/</span> <strong id="breadcrumbTitle">Tổng quan</strong></div><div class="top-subtitle">Hệ thống quản lý kho hàng</div></div>
+        <div class="topbar-right"><span class="today-label" id="todayLabel"></span><div class="top-avatar" id="topAvatar">A</div></div>
+      </header>
+      <div class="content-wrap">
+        <section id="page-dashboard" class="page-section">
+          <div class="page-heading"><div><p class="eyebrow">OVERVIEW</p><h1>Tổng quan kho hàng</h1><p class="muted">Theo dõi nhanh tình hình hoạt động của hệ thống.</p></div><button class="btn btn-outline" id="refreshDashboard">↻ Làm mới</button></div>
+          <div id="summaryCards" class="stats-grid"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div>
+          <div class="dashboard-grid">
+            <div class="panel panel-wide"><div class="panel-heading"><div><h3>Hàng hóa cần chú ý</h3><p class="muted">Các dòng tồn kho đang bằng hoặc thấp hơn mức tối thiểu</p></div><button class="text-btn" data-go="inventory">Xem tồn kho →</button></div><div id="lowStockTable" class="table-wrap"></div></div>
+            <div class="panel"><div class="panel-heading"><div><h3>Thao tác nhanh</h3><p class="muted">Các nghiệp vụ thường dùng</p></div></div><div class="quick-actions"><button data-go="inventory" data-action="receipt"><span class="quick-icon green">＋</span><span><b>Nhập kho</b><small>Tăng số lượng tồn</small></span><i>→</i></button><button data-go="inventory" data-action="issue"><span class="quick-icon amber">－</span><span><b>Xuất kho</b><small>Ghi nhận xuất hàng</small></span><i>→</i></button><button data-go="products"><span class="quick-icon blue">▤</span><span><b>Quản lý sản phẩm</b><small>Danh sách hàng hóa</small></span><i>→</i></button><button data-go="movements"><span class="quick-icon violet">↔</span><span><b>Lịch sử giao dịch</b><small>Tra cứu nhập xuất</small></span><i>→</i></button></div></div>
+          </div>
+        </section>
+
+        <section id="page-products" class="page-section hidden">
+          <div class="page-heading"><div><p class="eyebrow">CATALOG</p><h1>Sản phẩm</h1><p class="muted">Quản lý mã SKU, giá bán và thông tin hàng hóa.</p></div><button class="btn btn-primary admin-only" id="addProductBtn">＋ Thêm sản phẩm</button></div>
+          <div class="panel"><div class="toolbar"><input id="productSearch" class="search-input" placeholder="Tìm theo tên sản phẩm hoặc SKU..."><select id="productCategory"><option value="">Tất cả danh mục</option></select><select id="productSort"><option value="sku" selected>SKU tăng dần</option><option value="id">ID</option><option value="name">Tên A → Z</option><option value="price">Giá bán</option><option value="createdat">Ngày tạo</option></select><select id="productDirection"><option value="false">Tăng dần</option><option value="true">Giảm dần</option></select><button class="btn btn-outline" id="searchProducts">Tìm kiếm</button></div><div id="productsTable" class="table-wrap"></div><div id="productsPager" class="pager"></div></div>
+        </section>
+
+        <section id="page-categories" class="page-section hidden">
+          <div class="page-heading"><div><p class="eyebrow">PRODUCT CLASSIFICATION</p><h1>Danh mục</h1><p class="muted">Phân loại sản phẩm trong hệ thống.</p></div><button class="btn btn-primary admin-only" id="addCategoryBtn">＋ Thêm danh mục</button></div>
+          <div class="panel"><div id="categoriesTable" class="table-wrap"></div></div>
+        </section>
+
+        <section id="page-suppliers" class="page-section hidden">
+          <div class="page-heading"><div><p class="eyebrow">PARTNERS</p><h1>Nhà cung cấp</h1><p class="muted">Thông tin liên hệ các đối tác cung ứng.</p></div><button class="btn btn-primary admin-only" id="addSupplierBtn">＋ Thêm nhà cung cấp</button></div>
+          <div class="panel"><div id="suppliersTable" class="table-wrap"></div></div>
+        </section>
+
+        <section id="page-warehouses" class="page-section hidden">
+          <div class="page-heading"><div><p class="eyebrow">LOCATIONS</p><h1>Kho hàng</h1><p class="muted">Quản lý địa điểm lưu trữ hàng hóa.</p></div><button class="btn btn-primary admin-only" id="addWarehouseBtn">＋ Thêm kho</button></div>
+          <div class="panel"><div id="warehousesTable" class="table-wrap"></div></div>
+        </section>
+
+        <section id="page-inventory" class="page-section hidden">
+          <div class="page-heading"><div><p class="eyebrow">STOCK CONTROL</p><h1>Tồn kho & nhập xuất</h1><p class="muted">Theo dõi tồn theo từng sản phẩm và kho.</p></div><button class="btn btn-outline" id="refreshInventory">↻ Làm mới</button></div>
+          <div class="inventory-actions"><div class="operation-card import-card"><div class="operation-symbol">＋</div><div><h3>Nhập kho</h3><p>Tăng số lượng tồn kho</p></div><button class="btn btn-success" id="openReceipt">Tạo phiếu nhập</button></div><div class="operation-card export-card"><div class="operation-symbol">－</div><div><h3>Xuất kho</h3><p>Hệ thống kiểm tra tồn trước khi xuất</p></div><button class="btn btn-warning" id="openIssue">Tạo phiếu xuất</button></div></div>
+          <div class="panel"><div class="panel-heading"><div><h3>Danh sách tồn kho</h3><p class="muted">Số lượng hiện có tại từng kho</p></div><select id="stockWarehouse"><option value="">Tất cả kho</option></select></div><div id="stocksTable" class="table-wrap"></div></div>
+        </section>
+
+        <section id="page-movements" class="page-section hidden">
+          <div class="page-heading"><div><p class="eyebrow">AUDIT TRAIL</p><h1>Lịch sử giao dịch</h1><p class="muted">Theo dõi các lần nhập kho và xuất kho.</p></div><button class="btn btn-outline" id="refreshMovements">↻ Làm mới</button></div>
+          <div class="panel"><div class="toolbar"><span class="muted">Sắp xếp theo thời gian mới nhất</span><div class="toolbar-spacer"></div><select id="movementPageSize"><option value="10">10 dòng</option><option value="20">20 dòng</option><option value="50">50 dòng</option></select></div><div id="movementsTable" class="table-wrap"></div><div id="movementsPager" class="pager"></div></div>
+        </section>
+      </div>
+      <footer class="app-footer"><span>KhoViet · Warehouse Management</span><span>Backend API · ASP.NET Core</span></footer>
+    </main>
+  </div>
+
+  <div id="modalHost"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>
