@@ -1,0 +1,114 @@
+//using demoAPI.Data;
+//using demoAPI.Models;
+
+//namespace demoAPI.Repositories
+//{
+//    public class UserRepository : IUserRepository
+//    {
+//        private readonly AppDbContext _context;
+
+//        public UserRepository(AppDbContext context)
+//        {
+//            _context = context;
+//        }
+
+//        public Users? GetByUsername(string username)
+//        {
+//            return _context.Users
+//                .FirstOrDefault(u => u.Username == username);
+//        }
+
+//        public Users? GetById(int id)
+//        {
+//            return _context.Users
+//                .FirstOrDefault(u => u.Id == id);
+//        }
+
+//        public Users Create(Users user)
+//        {
+//            _context.Users.Add(user);
+//            _context.SaveChanges();
+
+//            return user;
+//        }
+//    }
+//}
+
+
+
+
+using demoAPI.Data;
+using demoAPI.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace demoAPI.Repositories
+{
+    public class UserRepository : IUserRepository
+    {
+        private readonly AppDbContext _db;
+
+        public UserRepository(AppDbContext db)
+        {
+            _db = db;
+        }
+
+        // GET ALL
+        public async Task<List<Users>> GetAllAsync()
+        {
+            return await _db.Users
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        // GET BY ID
+        public async Task<Users?> GetByIdAsync(int id)
+        {
+            return await _db.Users
+                .FirstOrDefaultAsync(u => u.Id == id);
+        }
+
+        // GET BY USERNAME
+        public async Task<Users?> GetByUsernameAsync(
+            string username)
+        {
+            return await _db.Users
+                .FirstOrDefaultAsync(
+                    u => u.Username == username);
+        }
+
+        // GET BY USERNAME OR EMAIL
+        public async Task<Users?> GetByUsernameOrEmailAsync(
+            string username,
+            string email)
+        {
+            return await _db.Users
+                .FirstOrDefaultAsync(
+                    u => u.Username == username ||
+                         u.Email == email);
+        }
+
+        // ADD USER
+        public async Task AddAsync(Users user)
+        {
+            await _db.Users.AddAsync(user);
+        }
+
+        // UPDATE USER
+        public void Update(Users user)
+        {
+            _db.Users.Update(user);
+        }
+
+        // DELETE USER
+        public void Delete(Users user)
+        {
+            _db.Users.Remove(user);
+        }
+
+        // SAVE CHANGES
+        public async Task<bool> SaveChangesAsync()
+        {
+            return await _db.SaveChangesAsync() > 0;
+        }
+    }
+}
